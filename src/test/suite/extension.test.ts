@@ -1,27 +1,29 @@
 import * as assert from "assert";
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from "vscode";
-import { defaultClient } from "../../extension";
 
-let extension: vscode.Extension<void>;
+import { defaultClient, workspaceClients } from "../../extension";
+import { EXTENSION_ID } from "../../constants";
 
 suite("Extension Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");
 
   suiteSetup(async () => {
-    const ext = vscode.extensions.getExtension("jakebecker.elixir-ls");
-    assert(ext);
-    extension = ext!;
+    const extension = vscode.extensions.getExtension(EXTENSION_ID);
+
+    assert(extension);
+
     await extension.activate();
   });
 
-  test("extention is available", async () => {
-    assert.ok(extension.isActive);
+  test("starts default and workspace clients", async () => {
+    const { uri: folderUri } = vscode.workspace.workspaceFolders![0];
     const sampleFileUri = vscode.Uri.parse("untitled:sample.ex");
-    const document = await vscode.workspace.openTextDocument(sampleFileUri);
-    await vscode.window.showTextDocument(document);
-    assert.ok(defaultClient);
+    const workspaceFileUri = vscode.Uri.joinPath(folderUri, "mix.exs");
+
+    await vscode.workspace.openTextDocument(sampleFileUri);
+    await vscode.workspace.openTextDocument(workspaceFileUri);
+
+    assert(defaultClient);
+    assert(workspaceClients.has(folderUri));
   });
 });

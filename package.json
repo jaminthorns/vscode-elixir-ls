@@ -406,12 +406,12 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "./prepublish.bash",
+    "vscode:prepublish": "npm install && npm compile && cp elixir-ls/CHANGELOG.md .",
+    "postinstall": "cd elixir-ls && mix deps.get",
     "compile": "tsc -p ./ && cd elixir-ls && mix elixir_ls.release -o ../elixir-ls-release",
-    "update-vscode": "node ./node_modules/vscode/bin/install",
     "test": "node ./out/test/runTest.js",
-    "lint": "eslint src/**/*.ts .*.js",
-    "check-formatting": "prettier --check src/**/*.ts .*.js "
+    "lint": "eslint src --ext ts .*.js",
+    "check-formatting": "prettier --check src --ext ts .*.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
